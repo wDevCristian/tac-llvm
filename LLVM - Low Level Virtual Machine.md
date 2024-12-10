@@ -3,7 +3,7 @@
 ## Conținut
 
 1. [LLVM. Prezentare](#1-prezentare-llvm)
-1. [Dezvoltare back-end](#2-dezvoltare-back-end)
+1. [Generarea Codului LLVM IR](#2-generarea-codului-llvm-ir)
 1. [clang](#3-clang)
    1. [Exemple de compilare clang + LLVM](#i-exemple-de-compilare-clang--llvm)
 
@@ -17,14 +17,14 @@ Conform definiției date de dezvoltatorii LLVM-ului acesta este
 
 ### 2. Generarea Codului LLVM IR
 ---
-#### Prerequisites
-LLVM
+#### I. Prerequisites
+[ ] LLVM
 
 ```sh
 sudo apt install llvm-dev
 ```
 
-#### AST
+#### II. AST
 
 > :pushpin: Reprezentarea AST (Abstract Syntax Tree) este un pas esențial în procesul de compilare atunci când folosim LLVM (sau orice alt framework de generare de cod intermediar). AST-ul servește drept punte între analiza inițială a codului sursă și generarea de cod executabil.Un AST (Abstract Syntax Tree) este o reprezentare ierarhică a structurii logice a unui program. Spre deosebire de codul sursă brut, AST-ul elimină detalii de suprafață, cum ar fi paranteze sau caractere de spațiu, păstrând doar structura semantică a programului.
 
@@ -39,7 +39,7 @@ Integer c = (b + 2) * 5 / a;
 
 ![alt text](ast.png)
 
-##### Clasele de reprezentare a nodurilor AST
+#### Clasele de reprezentare a nodurilor AST
 
 ```c
 #include <memory>
@@ -278,12 +278,7 @@ std::unique_ptr<Program> buildAST() {
    auto* aValue = builder.CreateLoad(a);
    ```
 
-9. _Optimizări și Metadate_
-   LLVM permite adăugarea de metadate și efectuarea optimizărilor:
-
-   Metadate: Adaugă informații adiționale, cum ar fi variabile de debug.  
-   Optimizări: Modulele pot fi trecute printr-un pipeline de optimizări.  
-   Relația între concepte  
+9. Relația între concepte  
    Context: Gestionează totul (tipuri, constante, etc.).  
    Module: Containere pentru funcții și variabile globale.  
    Funcții: Blocuri organizate de instrucțiuni, construite cu ajutorul builder-ului.  
@@ -291,7 +286,7 @@ std::unique_ptr<Program> buildAST() {
    Instrucțiuni: Operații individuale din cod.
 
 
-##### Codul pentru generare LLVM IR
+#### Codul pentru generare LLVM IR
 
 ```c
 #include <llvm/IR/IRBuilder.h>
