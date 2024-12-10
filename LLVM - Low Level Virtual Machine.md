@@ -371,3 +371,44 @@ int main() {
 ---
 
 
+### Clang
+
+Clang este un compilator care face parte din infrastructura LLVM, proiectat să ofere o alternativă modernă și performantă
+compilatorului GNU Compiler Collection (GCC). Principalele sale caracteristici includ:
+
+[ ] Un frontend de compilare pentru C, C++ și Objective-C
+[ ] Parte integrală a proiectului LLVM
+[ ] Proiectat cu un design modular și extensibil
+[ ] Oferă diagnostice de eroare foarte precise și ușor de înțeles
+
+
+Clang funcționează ca un front-end care transformă codul sursă într-o reprezentare intermediară (IR) LLVM, 
+ce poate fi ulterior procesată de alte componente ale infrastructurii LLVM. 
+Etapele principale includ:
+
+[ ] Analiza Lexicală și Sintactică
+[ ] Generarea IR
+[ ] Optimizări și Generare de Cod
+
+
+Exemple de utilizare
+```sh
+# Compilare simplă
+clang program.c -o program
+
+# Compilare cu optimizări
+clang -O2 program.c -o program
+
+# Generare fișier intermediar LLVM
+clang -emit-llvm program.c
+```
+
+# Diferențe față de GCC: Comparație Tehnică
+
+| Caracteristică | Clang | GCC |
+|---------------|-------|-----|
+| Viteză de compilare | Mai rapidă | Mai lentă |
+| Utilizare memorie | Mai eficientă | Mai puțin eficientă |
+| Mesaje de eroare | Detaliate și clare | Mai puțin descriptive |
+| Modularitate | Design modular | Design monolitic |
+| Suport IDE | Foarte bun | Limitat |
