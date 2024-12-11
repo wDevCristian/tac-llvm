@@ -4,48 +4,51 @@
 
 1. [LLVM. Prezentare](#1-prezentare-llvm)
 1. [Generarea Codului LLVM IR](#2-generarea-codului-llvm-ir)
-    1. [Prerequisites](#i-prerequisites)
-    1. [AST](#ii-ast)
+   1. [Prerequisites](#i-prerequisites)
+   1. [AST](#ii-ast)
 1. [Optimizări](#3-optimizări)
-    1. [Elemente teoretice](#i-elemente-teoretice)
-    1. [Elemente practice](#ii-elemente-practice)
-1.  [Generare cod mașină sau assembly code pentru arhitecturi diferite](#4-generare-cod-mașină-sau-assembly-code-pentru-arhitecturi-diferite)
-    1. [Generare assembly code](#i-generare-assembly-code)
-    1. [Generare cod mașină](#ii-generare-cod-mașină)
+   1. [Elemente teoretice](#i-elemente-teoretice)
+   1. [Elemente practice](#ii-elemente-practice)
+1. [Generare cod mașină sau assembly code pentru arhitecturi diferite](#4-generare-cod-mașină-sau-assembly-code-pentru-arhitecturi-diferite)
+   1. [Generare assembly code](#i-generare-assembly-code)
+   1. [Generare cod mașină](#ii-generare-cod-mașină)
 1. [clang](#5-clang)
 
 ### 1. Prezentare LLVM
 
 ---
 
-LLVM, denumit fiind Low-Level Virtual Machine, deși autorii zis că acesta nu este un acronim, ci numele complet al proiectului. LLVM-ul este un framework pentru compilaroare extrem de versatil și modern, conceput pentru a oferi un set de instrumente pentru construirea de compilatoare și sisteme de procesare a limbajului robuste și de înaltă performanță. Conceput inițial în 2000 la Universitatea din Illinois, LLVM a evoluat într-un cadru standard industrial adoptat pe scară largă de organizații și dezvoltatori pentru flexibilitatea sa, designul modular și lanțul cuprinzător de instrumente.
-
-Definiția autorilor:
-> :pushpin: Proiectul LLVM are mai multe componente. Nucleul proiectului se numește „LLVM”. Acesta conține toate instrumentele, bibliotecile și fișierele de antet necesare pentru procesarea codului LLVM IR(LLVM Intermediate Representation) și conversia acestora în fișiere obiect. Instrumentele includ un asamblor, un dezasamblor, un analizor de coduri de biți și un optimizator de coduri de biți. Acesta conține, de asemenea, teste de regresie de bază.
+LLVM, denumit fiind Low-Level Virtual Machine, deși autorii zis că acesta nu este un acronim, ci numele complet al proiectului. LLVM-ul este un framework pentru compilatoare extrem de versatil și modern, conceput pentru a oferi un set de instrumente pentru construirea de compilatoare și sisteme de procesare a limbajului robuste și de înaltă performanță. Conceput inițial în 2000 la Universitatea din Illinois, LLVM a evoluat într-un cadru standard industrial adoptat pe scară largă de organizații și dezvoltatori pentru flexibilitatea sa, designul modular și lanțul cuprinzător de instrumente.
 
 **Caracteristici cheie**
-- *Reprezentarea intermediară (IR)*: LLVM IR este un limbaj de programare independent de platformă, puternic tipizat și de nivel scăzut. Acesta servește ca abstracție de bază care permite o gamă largă de optimizări și transformări pe diferite arhitecturi hardware. Disponibil atât în formate citibile de către om, cât și în formate binare, (de exemplu, fișiere .ll și .bc), LLVM IR este esențial pentru portabilitatea și flexibilitatea sa.
 
-- *Proiectare modulară și extensibilă*: LLVM este conceput ca o colecție de componente modulare, cum ar fi front-end, middle-end și back-end, fiecare gestionând diferite etape ale compilării. Această modularitate permite dezvoltatorilor să personalizeze și să extindă LLVM pentru a crea compilatoare specifice domeniului, pentru a integra procese de optimizare personalizate sau pentru a suporta noi arhitecturi hardware.
+- _Reprezentarea intermediară (IR)_: LLVM IR este un limbaj de programare independent de platformă, puternic tipizat și de nivel scăzut. Acesta servește ca abstracție de bază care permite o gamă largă de optimizări și transformări pe diferite arhitecturi hardware. Disponibil atât în formate citibile de către om, cât și în formate binare, (de exemplu, fișiere .ll și .bc), LLVM IR este esențial pentru portabilitatea și flexibilitatea sa.
 
-- *Suport multilingv și multiplatformă*: LLVM suportă o gamă largă de limbaje de programare prin diverse front-ends, cum ar fi Clang pentru C, C++ și Objective-C și alte proiecte pentru limbaje precum Rust, Swift, Julia și altele. Capacitatea sa de a viza arhitecturi multiple, inclusiv x86, ARM, RISC-V și GPU, îl face foarte adaptabil pentru diverse nevoi de dezvoltare.
+- _Proiectare modulară și extensibilă_: LLVM este conceput ca o colecție de componente modulare, cum ar fi front-end, middle-end și back-end, fiecare gestionând diferite etape ale compilării. Această modularitate permite dezvoltatorilor să personalizeze și să extindă LLVM pentru a crea compilatoare specifice domeniului, pentru a integra procese de optimizare personalizate sau pentru a suporta noi arhitecturi hardware.
 
-- *Capacități de optimizare*: LLVM oferă un set bogat de procese de optimizare atât la nivelul IR, cât și la cel specific arhitecturii țintă. Acestea includ transformări avansate ce asigură performanța și eficiența codului.
+- _Suport multilingv și multiplatformă_: LLVM suportă o gamă largă de limbaje de programare prin diverse front-ends, cum ar fi Clang pentru C, C++ și Objective-C și alte proiecte pentru limbaje precum Rust, Swift, Julia și altele. Capacitatea sa de a viza arhitecturi multiple, inclusiv x86, ARM, RISC-V și GPU, îl face foarte adaptabil pentru diverse nevoi de dezvoltare.
+
+- _Capacități de optimizare_: LLVM oferă un set bogat de procese de optimizare atât la nivelul IR, cât și la cel specific arhitecturii țintă. Acestea includ transformări avansate ce asigură performanța și eficiența codului.
 
 **Arhitectura LLVM**  
 LLVM urmează un pipeline de compilare în 3 faze:
-1. *Front-End*: Front-end-ul convertește codul sursă de nivel înalt în LLVM IR. Diferite compilatoare front-end (precum Clang pentru C/C++, Swift, Rust) asigură analiza sintaxei, verificarea semantică și generarea codului pentru a produce IR.
 
-2. *Middle-End*: Middle-end efectuează optimizări independente de țintă pe IR. Acesta aplică diverse transformări pentru a îmbunătăți performanța, a reduce dimensiunea codului și a simplifica structura programului, păstrând în același timp corectitudinea.
+1. _Front-End_: Front-end-ul convertește codul sursă de nivel înalt în LLVM IR. Diferite compilatoare front-end (precum Clang pentru C/C++, Swift, Rust) asigură analiza sintaxei, verificarea semantică și generarea codului pentru a produce IR.
 
-3. *Back-End*: Partea din spate translatează IR optimizat în cod de asamblare sau mașină specific arhitecturii țintă. Se mai ocupă de sarcini precum selectarea instrucțiunilor, alocarea registrelor și optimizările specifice țintă pentru a asigura o execuție eficientă.
+2. _Middle-End_: Middle-end efectuează optimizări independente de țintă pe IR. Acesta aplică diverse transformări pentru a îmbunătăți performanța, a reduce dimensiunea codului și a simplifica structura programului, păstrând în același timp corectitudinea.
+
+3. _Back-End_: Partea din spate translatează IR optimizat în cod de asamblare sau mașină specific arhitecturii țintă. Se mai ocupă de sarcini precum selectarea instrucțiunilor, alocarea registrelor și optimizările specifice țintă pentru a asigura o execuție eficientă.
 
 ![alt text](image-6.png)
 
+<div class="page"></div>
 
 ### 2. Generarea Codului LLVM IR
+
 ---
+
 #### I. Prerequisites
+
 [ ] LLVM dev
 
 ```sh
@@ -56,14 +59,15 @@ sudo apt install llvm-dev
 
 > :pushpin: Reprezentarea AST (Abstract Syntax Tree) este un pas esențial în procesul de compilare atunci când folosim LLVM (sau orice alt framework de generare de cod intermediar). AST-ul servește drept punte între analiza inițială a codului sursă și generarea de cod executabil.Un AST (Abstract Syntax Tree) este o reprezentare ierarhică a structurii logice a unui program. Spre deosebire de codul sursă brut, AST-ul elimină detalii de suprafață, cum ar fi paranteze sau caractere de spațiu, păstrând doar structura semantică a programului.
 
->Pseudocod:
+> Pseudocod:
+
 ```c
 Integer a = 5;
 Integer b = a * 5;
 Integer c = (b + 2) * 5 / a;
 ```
 
->AST este o structură arborescentă care reprezintă operațiunile și expresiile. Iată cum arată AST pentru acest cod:
+> AST este o structură arborescentă care reprezintă operațiunile și expresiile. Iată cum arată AST pentru acest cod:
 
 ![alt text](ast.png)
 
@@ -313,7 +317,6 @@ std::unique_ptr<Program> buildAST() {
    Blocuri de bază: Structuri pentru controlul fluxului.  
    Instrucțiuni: Operații individuale din cod.
 
-
 #### Codul pentru generare LLVM IR
 
 ```c
@@ -398,23 +401,23 @@ int main() {
 
 ---
 
-#### I. Elemente teoretice 
+#### I. Elemente teoretice
 
-Faza intermediară(middle-end) a cadrului de compilare LLVM este cea în care au loc majoritatea transformărilor de optimizare. Această etapă procesează reprezentarea intermediară (IR) a codului, efectuând transformări independente de arhitectura mașinii. Acestea sunt menite să îmbunătățească performanța și să reducă utilizarea resurselor. Optimizările Middle-end în LLVM IR valorifică formatul său structurat de nivel înalt, care păstrează detaliile esențiale ale programului, făcând abstracție de complexitățile specifice mașinii.
+Faza intermediară(middle-end) a framework-ului de compilatoare LLVM este cea în care au loc majoritatea transformărilor de optimizare. Această etapă procesează reprezentarea intermediară (IR) a codului, efectuând transformări independente de arhitectura mașinii. Acestea sunt menite să îmbunătățească performanța și să reducă utilizarea resurselor. Optimizările Middle-end în LLVM IR valorifică formatul său structurat de nivel înalt, care păstrează detaliile esențiale ale programului, făcând abstracție de complexitățile specifice mașinii.
 
-Middle-end-ul LLVM se bazează pe o infrastructură sofisticată de ***passes*** pentru a implementa optimizări și analize. Acestea se împart în două mari categorii: **analysis passes** și **transformation passes**, fiecare servind unui scop specific în îmbunătățirea sau pregătirea reprezentării intermediare (IR) pentru prelucrarea ulterioară.
+Middle-end-ul LLVM se bazează pe o infrastructură sofisticată de **_passes_** pentru a implementa optimizări și analize. Acestea se împart în două mari categorii: **analysis passes** și **transformation passes**, fiecare servind unui scop specific în îmbunătățirea sau pregătirea reprezentării intermediare (IR) pentru prelucrarea ulterioară.
 
-**Analysis passes** sunt funcții care colectează și furnizează informații despre LLVM IR fără a-l modifica direct. Acestea servesc drept bază pentru procesele de transformare(*transformation passes*), permițându-le să ia decizii pe baza proprietăților programului. Acest proces de analiza e ușor din punct de vedere al calculului în comparație cu transformările și adesea își memorează rezultatele pentru a evita calculele redundante.
+**Analysis passes** sunt funcții care colectează și furnizează informații despre LLVM IR fără a-l modifica direct. Acestea servesc drept bază pentru procesele de transformare(_transformation passes_), permițându-le să ia decizii pe baza proprietăților programului. Acest proces de analiza e ușor din punct de vedere al calculului în comparație cu transformările și adesea își memorează rezultatele pentru a evita calculele redundante.
 
 **Transformation passes** modifică direct IR pentru a-l optimiza. Aceste procese se bazează pe informațiile din procesele de analiză pentru a asigura corectitudinea și eficiența transformărilor lor. Ele sunt responsabile pentru îmbunătățirea performanței, reducerea dimensiunii sau simplificarea structurii codului.
 
-Middle-end-ul LLVM oferă o multitudine de optimizări încorporate care pot fi aplicate la momentul compilării, la momentul legăturii(lnker) sau la momentul rulării (în cazul compilării JIT (Just-in-Time)). 
+Middle-end-ul LLVM oferă o multitudine de optimizări încorporate care pot fi aplicate la momentul compilării, la momentul legăturii(lnker) sau la momentul rulării (în cazul compilării JIT (Just-in-Time)).
 
 Lista cu optimizări: [https://llvm.org/docs/Passes.html](https://llvm.org/docs/Passes.html)
 
 #### II. Elemente practice
 
-Optimizarea codului LLVM IR poate fi predefinită, cât și dezvoltată manual de programator. În cadrul exemplului de mai jos va fi prezentată o soluție predefinită, utilizând un instrument din infrastructura LLVM - `opt`. 
+Optimizarea codului LLVM IR poate fi predefinită, cât și dezvoltată manual de programator. În cadrul exemplului de mai jos va fi prezentată o soluție predefinită, utilizând un instrument din infrastructura LLVM - `opt`.
 
 Utilizând instrumentul de optimizare se va transforma versiunea neoptimizată, human-readable a fișierului ce conține codul LLVM IR într-o altă versiune optimizată, human-readable. `ir.ll` &rarr; `ir_opt.ll`.
 
@@ -422,10 +425,9 @@ Utilizând instrumentul de optimizare se va transforma versiunea neoptimizată, 
 opt -f -S ir.ll -stats -print-passes -o ir_opt.ll
 ```
 
-> Documentatie instrument `opt`: [https://llvm.org/docs/CommandGuide/opt.html](https://llvm.org/docs/CommandGuide/opt.html) 
+> Documentatie instrument `opt`: [https://llvm.org/docs/CommandGuide/opt.html](https://llvm.org/docs/CommandGuide/opt.html)
 
 Datorită parametrului `-print-passes`, obținem o listă cu toată trecerile. Lista este una foarte mare, deci în exemplul următor sunt prezentate doar o parte din ele. Pentru a vedea toată lista, accesați [https://github.com/wDevCristian/tac-llvm](https://github.com/wDevCristian/tac-llvm) și vedeți fisierul `Module passes.txt`.
-
 
 ![alt text](image.png)
 
@@ -455,6 +457,7 @@ entry:
 ```
 
 Codul sursă din `ir_opt.ll`
+
 ```ll
 ; ModuleID = 'ir.ll'
 source_filename = "SimpleModule"
@@ -469,13 +472,15 @@ attributes #0 = { mustprogress nofree norecurse nosync nounwind willreturn memor
 
 ```
 
-Drept rezultat, instrumentul de optimizare considera elimină calculele, din moment ce functia returneaza intr-un final valoarea `0`, iar variabilele nu sunt utilizate în altă parte.
+Drept rezultat, instrumentul de optimizare consideră eliminarea calculelor, din moment ce functia returneaza intr-un final valoarea `0`, iar variabilele nu sunt utilizate în altă parte.
 
-### 4. Generare de cod mașină sau assembly code pentru arhitecturi diferite 
+<div class="page"></div>
+
+### 4. Generare de cod mașină sau assembly code pentru arhitecturi diferite
 
 ---
 
-Generarea codului este etapa finală a procesului de compilare, în care reprezentarea intermediară optimizată (IR) este translatată în codul de asamblare sau mașină specific arhitecturii acestuia. 
+Generarea codului este etapa finală a procesului de compilare, în care reprezentarea intermediară optimizată (IR) este translatată în codul de asamblare sau mașină specific arhitecturii acestuia.
 
 Generarea codului în limbaj de asamblare sau cod mașină e posibilă prin utilizarea compilatorului de system LLVM - `llc`.
 
@@ -483,14 +488,14 @@ Documntație instrument `llc`: [https://llvm.org/docs/CommandGuide/llc.html](htt
 
 #### I. Generare assembly code
 
-> În cazul în care nu e specificată arhitectura pentru care se generează cod mașină sau assembly code, se utilizează arhitectura computerului pe care este rulat. Datele acestea sunt cunoscute de `llc`
-![alt text](image-2.png)
+> În cazul în care nu e specificată arhitectura pentru care se generează cod mașină sau assembly code, se utilizează arhitectura computerului pe care este rulat. Datele acestea sunt cunoscute de `llc` > ![alt text](image-2.png)
 
 > De dragul exemplului voi lua varianta neoptimizată a fișierului ce conține LLVM IR, iar compilarea o voi face fără a utiliza optimizările compilatorului `llc`. Fisierul .s rezultat va conține mai multe date, iar comparația dintre reprezentarea IR și codul de asamblare va fi mai evidentă.
 
 ```bash
 llc -O0 ir.ll -filetype=asm -o ir_asm.s
 ```
+
 Conținutul fișierului ir_asm.s
 
 ```asm
@@ -522,45 +527,50 @@ main:                                   # @main
 ```
 
 #### II. Generare cod mașină
+
 ```bash
 llc ir.ll -filetype=obj -o ir.obj
 ```
+
 ![alt text](image-3.png)
 
-> Pentru a modifica arhitectura pentru care e generat codul mașină se utilizează argumentul `-march`. 
+> Pentru a modifica arhitectura pentru care e generat codul mașină se utilizează argumentul `-march`.
 
-> Pentru a vedea pe ce arhitecturi poate fi generat codul, se utilizează comanda:  
-    ```bash
-    llc --version
-    ```
+> Pentru a vedea pe ce arhitecturi poate fi generat codul, se utilizează comanda: `llc --version`
+
 ![alt text](image-5.png)
 
 Exemplul pentru generarea de cod mașină pentru architectura ARM64.
+
 ```bash
 llc ir.ll -march=aarch64 -filetype=obj -o ir_aarch.obj
 ```
+
 ![alt text](image-4.png)
+
+<div class="page"></div>
+
 ### 5. Clang
 
 ---
 
 Clang este un compilator care face parte din infrastructura LLVM, proiectat să ofere o alternativă modernă și performantă
-compilatorului GNU Compiler Collection (GCC). Principalele sale caracteristici includ:  
+compilatorului GNU Compiler Collection (GCC). Principalele sale caracteristici includ:
 
-- Un frontend de compilare pentru C, C++ și Objective-C  
-- Parte integrală a proiectului LLVM  
-- Proiectat cu un design modular și extensibil  
-- Oferă diagnostice de eroare foarte precise și ușor de înțeles  
+- Un frontend de compilare pentru C, C++ și Objective-C
+- Parte integrală a proiectului LLVM
+- Proiectat cu un design modular și extensibil
+- Oferă diagnostice de eroare foarte precise și ușor de înțeles
 
+Clang funcționează ca un front-end care transformă codul sursă într-o reprezentare intermediară (IR) LLVM,
+ce poate fi ulterior procesată de alte componente ale infrastructurii LLVM.
+Etapele principale includ:
 
-Clang funcționează ca un front-end care transformă codul sursă într-o reprezentare intermediară (IR) LLVM, 
-ce poate fi ulterior procesată de alte componente ale infrastructurii LLVM. 
-Etapele principale includ:  
-
-1. Analiza Lexicală și Sintactică  
-1. Generarea IR  
+1. Analiza Lexicală și Sintactică
+1. Generarea IR
 
 Exemple de utilizare:
+
 ```sh
 # Compilare simplă
 clang program.c -o program
@@ -574,10 +584,10 @@ clang -emit-llvm program.c
 
 # Diferențe față de GCC: Comparație Tehnică
 
-| Caracteristică | Clang | GCC |
-|---------------|-------|-----|
-| Viteză de compilare | Mai rapidă | Mai lentă |
-| Utilizare memorie | Mai eficientă | Mai puțin eficientă |
-| Mesaje de eroare | Detaliate și clare | Mai puțin descriptive |
-| Modularitate | Design modular | Design monolitic |
-| Suport IDE | Foarte bun | Limitat |
+| Caracteristică      | Clang              | GCC                   |
+| ------------------- | ------------------ | --------------------- |
+| Viteză de compilare | Mai rapidă         | Mai lentă             |
+| Utilizare memorie   | Mai eficientă      | Mai puțin eficientă   |
+| Mesaje de eroare    | Detaliate și clare | Mai puțin descriptive |
+| Modularitate        | Design modular     | Design monolitic      |
+| Suport IDE          | Foarte bun         | Limitat               |
